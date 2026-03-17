@@ -1,5 +1,7 @@
 import Header from './components/Header';
+import Hero from './components/Hero';
 import ProductCard from './components/ProductCard';
+import Footer from './components/Footer';
 
 export default function Home() {
   const products = [
@@ -28,7 +30,8 @@ export default function Home() {
   return (
     <main style={{ background: '#FAF6F1', minHeight: '100vh' }}>
       <Header />
-      <section style={{ maxWidth: 1152, margin: '0 auto', padding: '60px 24px' }}>
+      <Hero />
+      <section id="catalog" style={{ maxWidth: 1152, margin: '0 auto', padding: '60px 24px' }}>
         <h2 style={{
           fontFamily: 'Georgia, serif',
           fontSize: '2rem',
@@ -46,6 +49,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
