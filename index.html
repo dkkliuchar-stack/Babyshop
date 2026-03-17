@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BabyShop — Premium Baby Clothing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream: #FAF6F1;
+      --blush: #F2E8DF;
+      --sand: #E8D9CC;
+      --terracotta: #C0785A;
+      --deep: #3B2A24;
+      --muted: #9C8478;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--deep);cursor:none;}
+    h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;}
+    #cursor{position:fixed;width:10px;height:10px;background:var(--terracotta);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;}
+    #cursor.hover{width:32px;height:32px;background:rgba(192,120,90,.18);border:1.5px solid var(--terracotta);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .fade-up{animation:fadeUp .7s ease both;}
+    .d1{animation-delay:.1s}.d2{animation-delay:.22s}.d3{animation-delay:.38s}.d4{animation-delay:.52s}
+    header{position:sticky;top:0;z-index:100;background:rgba(250,246,241,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--sand);}
+    .nav-link{position:relative;font-size:12px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s;text-decoration:none;}
+    .nav-link::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--terracotta);transition:width .25s ease;}
+    .nav-link:hover{color:var(--terracotta);}
+    .nav-link:hover::after{width:100%;}
+    .ticker-wrap{background:var(--terracotta);overflow:hidden;padding:8px 0;}
+    .ticker{display:flex;white-space:nowrap;animation:marquee 24s linear infinite;}
+    .ticker span{padding:0 2.5rem;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#fff;}
+    .hero-bg{background:var(--blush);position:relative;overflow:hidden;}
+    .hero-bg::before{content:'';position:absolute;top:-100px;right:-100px;width:420px;height:420px;border-radius:50%;background:var(--sand);opacity:.45;}
+    .hero-bg::after{content:'';position:absolute;bottom:-60px;left:6%;width:220px;height:220px;border-radius:50%;background:var(--sand);opacity:.3;}
+    .badge{display:inline-block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:var(--sand);color:var(--muted);padding:4px 10px;border-radius:2px;font-family:'Jost',sans-serif;}
+    .badge-new{background:var(--terracotta);color:#fff;}
+    .badge-sale{background:var(--deep);color:#fff;}
+    .product-card{background:#fff;border:1px solid var(--sand);border-radius:4px;overflow:hidden;transition:box-shadow .3s,transform .3s;}
+    .product-card:hover{box-shadow:0 16px 48px rgba(59,42,36,.11);transform:translateY(-5px);}
+    .product-card:hover .card-img{transform:scale(1.06);}
+    .card-img{transition:transform .5s ease;width:100%;height:100%;object-fit:cover;display:block;}
+    .img-wrap{overflow:hidden;height:320px;background:var(--blush);position:relative;}
+    .btn-primary{background:var(--deep);color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:12px 22px;border:none;cursor:none;transition:background .2s,transform .15s;border-radius:2px;font-family:'Jost',sans-serif;white-space:nowrap;}
+    .btn-primary:hover{background:var(--terracotta);}
+    .btn-primary:active{transform:scale(.97);}
+    .btn-outline{background:transparent;color:var(--deep);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:11px 24px;border:1px solid var(--deep);cursor:none;transition:background .2s,color .2s;border-radius:2px;font-family:'Jost',sans-serif;}
+    .btn-outline:hover{background:var(--deep);color:#fff;}
+    .wishlist-btn{position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(255,255,255,.88);border:1px solid var(--sand);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:none;transition:background .2s;}
+    .wishlist-btn:hover{background:#fff;}
+    .wishlist-btn.active svg path{fill:var(--terracotta);stroke:var(--terracotta);}
+    #cart-drawer{position:fixed;top:0;right:0;width:380px;height:100vh;background:#fff;border-left:1px solid var(--sand);z-index:200;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+    #cart-drawer.open{transform:translateX(0);}
+    #overlay{position:fixed;inset:0;background:rgba(59,42,36,.22);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s;}
+    #overlay.show{opacity:1;pointer-events:all;}
+    .cart-count{position:absolute;top:-6px;right:-8px;width:17px;height:17px;background:var(--terracotta);color:#fff;font-size:10px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;}
+    #toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--deep);color:#fff;padding:12px 22px;border-radius:3px;font-size:13px;letter-spacing:.03em;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:300;white-space:nowrap;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .cat-pill{border:1px solid var(--sand);border-radius:2px;padding:7px 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:none;transition:all .2s;background:transparent;font-family:'Jost',sans-serif;}
+    .cat-pill.active,.cat-pill:hover{background:var(--deep);color:#fff;border-color:var(--deep);}
+    .size-btn{font-size:11px;letter-spacing:.06em;padding:5px 10px;border:1px solid var(--sand);background:transparent;color:var(--muted);cursor:none;border-radius:2px;transition:all .15s;font-family:'Jost',sans-serif;}
+    .size-btn.active{background:var(--deep);color:#fff;border-color:var(--deep);}
+    .size-btn:hover:not(.active){border-color:var(--muted);}
+    .stars{color:var(--terracotta);font-size:11px;letter-spacing:1px;}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .feature-item{border-right:1px solid var(--sand);}
+    .feature-item:last-child{border-right:none;}
+    .qty-btn{width:26px;height:26px;border:1px solid var(--sand);background:transparent;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s;border-radius:2px;}
+    .qty-btn:hover{background:var(--blush);}
+    footer{background:var(--deep);color:rgba(255,255,255,.6);}
+    footer a{color:rgba(255,255,255,.5);font-size:13px;transition:color .2s;text-decoration:none;display:block;}
+    footer a:hover{color:#fff;}
+    .footer-title{color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;font-family:'Jost',sans-serif;font-weight:500;}
+    @media(max-width:768px){.img-wrap{height:260px;}#cart-drawer{width:100vw;}}
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="overlay" onclick="closeCart()"></div>
+<div id="toast"></div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Free shipping on orders over $75</span><span>·</span>
+    <span>New Arrivals — Spring / Summer 2026</span><span>·</span>
+    <span>100% Organic Cotton · GOTS Certified</span><span>·</span>
+    <span>Free returns within 30 days</span><span>·</span>
+    <span>Free shipping on orders over $75</span><span>·</span>
+    <span>New Arrivals — Spring / Summer 2026</span><span>·</span>
+    <span>100% Organic Cotton · GOTS Certified</span><span>·</span>
+    <span>Free returns within 30 days</span><span>·</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
+    <a href="#" class="serif" style="font-size:1.6rem;color:var(--deep);font-weight:600;letter-spacing:.03em;text-decoration:none;">Baby<span style="color:var(--terracotta);">Shop</span></a>
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="#" class="nav-link">New Arrivals</a>
+      <a href="#catalog" class="nav-link" onclick="smoothScroll(event,'catalog')">Catalog</a>
+      <a href="#" class="nav-link">Collections</a>
+      <a href="#" class="nav-link">About</a>
+    </nav>
+    <div class="flex items-center gap-5">
+      <button onclick="showToast('Search — coming soon')" style="background:none;border:none;cursor:none;color:var(--muted);transition:color .2s;" onmouseenter="this.style.color='var(--terracotta)'" onmouseleave="this.style.color='var(--muted)'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>
+      </button>
+      <button onclick="showToast('Wishlist saved ♥')" style="background:none;border:none;cursor:none;color:var(--muted);transition:color .2s;" onmouseenter="this.style.color='var(--terracotta)'" onmouseleave="this.style.color='var(--muted)'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button onclick="openCart()" style="position:relative;background:none;border:none;cursor:none;color:var(--muted);transition:color .2s;" onmouseenter="this.style.color='var(--terracotta)'" onmouseleave="this.style.color='var(--muted)'">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6h18M16 10a4 4 0 01-8 0" stroke-linecap="round"/></svg>
+        <span class="cart-count" id="cart-count" style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero-bg">
+  <div class="max-w-6xl mx-auto px-6 py-24 md:py-32 flex flex-col md:flex-row items-center gap-14 relative z-10">
+    <div class="flex-1">
+      <div class="badge mb-5 fade-up">Spring / Summer 2026</div>
+      <h1 class="fade-up d1" style="font-size:clamp(2.8rem,6vw,5rem);line-height:1.06;color:var(--deep);font-weight:500;">
+        Dressed in<br/>softness<br/><em style="color:var(--terracotta);">&amp; love.</em>
+      </h1>
+      <p class="fade-up d2" style="margin-top:1.5rem;font-size:15px;line-height:1.75;color:var(--muted);max-width:360px;font-weight:300;">
+        Premium organic cotton clothing for babies 0–24 months. Safe dyes, gentle fabrics, thoughtful details.
+      </p>
+      <div class="flex items-center gap-4 mt-8 flex-wrap fade-up d3">
+        <button class="btn-primary" onclick="smoothScroll(event,'catalog')">Shop Collection</button>
+        <button class="btn-outline" onclick="showToast('Lookbook coming soon')">View Lookbook</button>
+      </div>
+      <div class="flex items-center gap-6 mt-9 flex-wrap fade-up d4" style="font-size:12px;color:var(--muted);letter-spacing:.04em;">
+        <span>✓ Free shipping $75+</span>
+        <span>✓ 30-day returns</span>
+        <span>✓ GOTS certified</span>
+      </div>
+    </div>
+    <div class="flex-1 flex justify-center fade-up d2">
+      <div style="position:relative;width:100%;max-width:420px;">
+        <div style="border-radius:6px;overflow:hidden;aspect-ratio:4/5;background:var(--sand);">
+          <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=800&q=85" alt="Baby fashion" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div style="position:absolute;bottom:-16px;left:-16px;background:#fff;border:1px solid var(--sand);border-radius:4px;padding:14px 18px;box-shadow:0 8px 28px rgba(59,42,36,.09);">
+          <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Bestseller</div>
+          <div class="serif" style="font-size:16px;color:var(--deep);font-weight:600;">Cloud Romper</div>
+          <div style="font-size:14px;color:var(--terracotta);margin-top:3px;">$34.00</div>
+        </div>
+        <div style="position:absolute;top:16px;right:-16px;background:var(--terracotta);color:#fff;padding:10px 14px;border-radius:4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;writing-mode:vertical-rl;text-orientation:mixed;">New Season</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES STRIP -->
+<div style="border-top:1px solid var(--sand);border-bottom:1px solid var(--sand);background:#fff;">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4">
+      <div class="feature-item py-5 px-4 text-center reveal">
+        <div style="font-size:18px;margin-bottom:6px;">🌿</div>
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--deep);font-weight:500;">Organic Cotton</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">GOTS Certified</div>
+      </div>
+      <div class="feature-item py-5 px-4 text-center reveal">
+        <div style="font-size:18px;margin-bottom:6px;">📦</div>
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--deep);font-weight:500;">Free Shipping</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Orders over $75</div>
+      </div>
+      <div class="feature-item py-5 px-4 text-center reveal">
+        <div style="font-size:18px;margin-bottom:6px;">🔄</div>
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--deep);font-weight:500;">Easy Returns</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">30 days, no hassle</div>
+      </div>
+      <div class="feature-item py-5 px-4 text-center reveal">
+        <div style="font-size:18px;margin-bottom:6px;">💛</div>
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--deep);font-weight:500;">Safe for Baby</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Non-toxic dyes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<section id="catalog" class="max-w-6xl mx-auto px-6 py-20">
+  <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 reveal">
+    <div>
+      <p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--terracotta);margin-bottom:8px;">Our Collection</p>
+      <h2 class="serif" style="font-size:clamp(2rem,4vw,2.8rem);font-weight:500;color:var(--deep);line-height:1.1;">New Arrivals</h2>
+    </div>
+    <div class="flex gap-2 mt-6 md:mt-0 flex-wrap">
+      <button class="cat-pill active" onclick="filterCat(this,'all')">All</button>
+      <button class="cat-pill" onclick="filterCat(this,'bodysuits')">Bodysuits</button>
+      <button class="cat-pill" onclick="filterCat(this,'rompers')">Rompers</button>
+      <button class="cat-pill" onclick="filterCat(this,'accessories')">Accessories</button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="product-grid">
+
+    <!-- Card 1 -->
+    <div class="product-card reveal" data-cat="bodysuits">
+      <div class="img-wrap">
+        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&q=85" alt="Bunny Bodysuit" class="card-img"/>
+        <span class="badge badge-new" style="position:absolute;top:14px;left:14px;">New</span>
+        <button class="wishlist-btn" onclick="toggleWishlist(this)">
+          <svg width="14" height="14" fill="none" stroke="var(--terracotta)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div style="padding:20px 22px 22px;">
+        <div class="flex items-center justify-between mb-2">
+          <span class="badge">Bodysuit</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <h3 class="serif" style="font-size:1.2rem;font-weight:500;color:var(--deep);margin:8px 0 4px;">Bunny Bodysuit</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">100% Organic Cotton · 0–12 months</p>
+        <div style="display:flex;gap:6px;margin-bottom:16px;" id="s1">
+          <button class="size-btn active" onclick="selectSize(this,'s1')">0–3m</button>
+          <button class="size-btn" onclick="selectSize(this,'s1')">3–6m</button>
+          <button class="size-btn" onclick="selectSize(this,'s1')">6–12m</button>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="serif" style="font-size:1.4rem;font-weight:600;color:var(--deep);">$24.00</span>
+          <button class="btn-primary" onclick="addToCart('Bunny Bodysuit',24,this)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="product-card reveal" data-cat="rompers">
+      <div class="img-wrap">
+        <img src="https://images.unsplash.com/photo-1567538096621-38d2284b23ff?w=600&q=85" alt="Cloud Romper" class="card-img"/>
+        <span class="badge badge-sale" style="position:absolute;top:14px;left:14px;">Sale</span>
+        <button class="wishlist-btn" onclick="toggleWishlist(this)">
+          <svg width="14" height="14" fill="none" stroke="var(--terracotta)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div style="padding:20px 22px 22px;">
+        <div class="flex items-center justify-between mb-2">
+          <span class="badge">Romper</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <h3 class="serif" style="font-size:1.2rem;font-weight:500;color:var(--deep);margin:8px 0 4px;">Cloud Romper</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Organic Cotton Blend · 3–18 months</p>
+        <div style="display:flex;gap:6px;margin-bottom:16px;" id="s2">
+          <button class="size-btn active" onclick="selectSize(this,'s2')">3–6m</button>
+          <button class="size-btn" onclick="selectSize(this,'s2')">6–12m</button>
+          <button class="size-btn" onclick="selectSize(this,'s2')">12–18m</button>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="serif" style="font-size:.95rem;color:var(--muted);text-decoration:line-through;margin-right:6px;">$42.00</span>
+            <span class="serif" style="font-size:1.4rem;font-weight:600;color:var(--terracotta);">$34.00</span>
+          </div>
+          <button class="btn-primary" onclick="addToCart('Cloud Romper',34,this)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="product-card reveal" data-cat="accessories">
+      <div class="img-wrap">
+        <img src="https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=600&q=85" alt="Bear Knit Hat" class="card-img"/>
+        <button class="wishlist-btn" onclick="toggleWishlist(this)">
+          <svg width="14" height="14" fill="none" stroke="var(--terracotta)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div style="padding:20px 22px 22px;">
+        <div class="flex items-center justify-between mb-2">
+          <span class="badge">Accessory</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <h3 class="serif" style="font-size:1.2rem;font-weight:500;color:var(--deep);margin:8px 0 4px;">Bear Knit Hat</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Merino Wool Blend · 0–24 months</p>
+        <div style="display:flex;gap:6px;margin-bottom:16px;" id="s3">
+          <button class="size-btn active" onclick="selectSize(this,'s3')">0–12m</button>
+          <button class="size-btn" onclick="selectSize(this,'s3')">12–24m</button>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="serif" style="font-size:1.4rem;font-weight:600;color:var(--deep);">$18.00</span>
+          <button class="btn-primary" onclick="addToCart('Bear Knit Hat',18,this)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-12 reveal">
+    <button class="btn-outline" onclick="showToast('Full catalog coming soon')">View All Products</button>
+  </div>
+</section>
+
+<!-- PROMO BANNER -->
+<section style="background:var(--deep);padding:80px 24px;text-align:center;" class="reveal">
+  <p style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--terracotta);margin-bottom:12px;">Limited Time Offer</p>
+  <h2 class="serif" style="font-size:clamp(1.8rem,4vw,3rem);color:#fff;font-weight:500;max-width:560px;margin:0 auto 16px;line-height:1.15;">Free shipping on your first order</h2>
+  <p style="font-size:14px;color:rgba(255,255,255,.5);max-width:380px;margin:0 auto 28px;line-height:1.7;">Use code <strong style="color:#fff;font-weight:500;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:2px;">WELCOME15</strong> at checkout and get 15% off.</p>
+  <button class="btn-primary" style="background:var(--terracotta);" onclick="copyCode()">Copy Code — WELCOME15</button>
+</section>
+
+<!-- CART DRAWER -->
+<div id="cart-drawer">
+  <div style="padding:22px 24px;border-bottom:1px solid var(--sand);display:flex;align-items:center;">
+    <div style="flex:1;">
+      <div class="serif" style="font-size:1.25rem;color:var(--deep);font-weight:500;">Your Cart</div>
+      <div style="font-size:12px;color:var(--muted);" id="cart-subtitle">0 items</div>
+    </div>
+    <button onclick="closeCart()" style="background:none;border:none;cursor:none;color:var(--muted);font-size:20px;line-height:1;padding:4px;" onmouseenter="this.style.color='var(--deep)'" onmouseleave="this.style.color='var(--muted)'">✕</button>
+  </div>
+  <div id="cart-items" style="flex:1;overflow-y:auto;padding:8px 24px;"></div>
+  <div style="padding:18px 24px;border-top:1px solid var(--sand);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">Subtotal</span>
+      <span class="serif" style="font-size:1.3rem;color:var(--deep);font-weight:600;" id="cart-total">$0.00</span>
+    </div>
+    <button class="btn-primary" style="width:100%;padding:14px;text-align:center;" onclick="showToast('Checkout coming in next sprint 🚀')">Proceed to Checkout</button>
+    <button class="btn-outline" style="width:100%;padding:12px;text-align:center;margin-top:10px;" onclick="closeCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="padding:60px 24px 32px;">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div>
+        <div class="serif" style="font-size:1.5rem;color:#fff;font-weight:500;margin-bottom:12px;">Baby<span style="color:var(--terracotta);">Shop</span></div>
+        <p style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.4);max-width:200px;">Premium organic clothing for the smallest members of your family.</p>
+      </div>
+      <div>
+        <div class="footer-title">Shop</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="#" onclick="showToast('Coming soon')">New Arrivals</a>
+          <a href="#" onclick="showToast('Coming soon')">Bodysuits</a>
+          <a href="#" onclick="showToast('Coming soon')">Rompers</a>
+          <a href="#" onclick="showToast('Coming soon')">Accessories</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-title">Help</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="#" onclick="showToast('Shipping info coming soon')">Shipping & Returns</a>
+          <a href="#" onclick="showToast('Size guide coming soon')">Size Guide</a>
+          <a href="#" onclick="showToast('FAQ coming soon')">FAQ</a>
+          <a href="#" onclick="showToast('Contact coming soon')">Contact Us</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-title">Stay in Touch</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;">Get 10% off your first order.</p>
+        <div style="display:flex;">
+          <input type="email" placeholder="your@email.com" id="email-input" style="flex:1;padding:10px 14px;font-size:13px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:#fff;outline:none;border-radius:2px 0 0 2px;font-family:'Jost',sans-serif;" onfocus="this.style.borderColor='var(--terracotta)'" onblur="this.style.borderColor='rgba(255,255,255,.15)'" placeholder="your@email.com"/>
+          <button style="background:var(--terracotta);color:#fff;border:none;padding:10px 16px;font-size:11px;cursor:none;letter-spacing:.1em;text-transform:uppercase;border-radius:0 2px 2px 0;font-family:'Jost',sans-serif;" onclick="subscribeEmail()">Join</button>
+        </div>
+      </div>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin-bottom:22px;"/>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <p style="font-size:12px;color:rgba(255,255,255,.25);">© 2026 BabyShop. All rights reserved.</p>
+      <div style="display:flex;gap:20px;">
+        <a href="#" onclick="showToast('Privacy policy coming soon')" style="font-size:12px;display:inline;">Privacy Policy</a>
+        <a href="#" onclick="showToast('Terms coming soon')" style="font-size:12px;display:inline;">Terms of Use</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Cursor
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px'; });
+document.querySelectorAll('a,button,.product-card,.cat-pill,.size-btn,.wishlist-btn,input').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+});
+
+// Cart
+let cart = [];
+function addToCart(name, price, btn) {
+  const ex = cart.find(i => i.name === name);
+  if (ex) ex.qty++;
+  else cart.push({ name, price, qty: 1 });
+  renderCart();
+  openCart();
+  showToast(name + ' added to cart');
+  const orig = btn.textContent;
+  btn.textContent = 'Added ✓';
+  setTimeout(() => btn.textContent = orig, 1800);
+}
+function removeFromCart(name) { cart = cart.filter(i => i.name !== name); renderCart(); }
+function changeQty(name, d) {
+  const item = cart.find(i => i.name === name);
+  if (!item) return;
+  item.qty += d;
+  if (item.qty <= 0) removeFromCart(name);
+  else renderCart();
+}
+function renderCart() {
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s,i) => s + i.qty, 0);
+  const cc = document.getElementById('cart-count');
+  cc.textContent = count;
+  cc.style.display = count > 0 ? 'flex' : 'none';
+  document.getElementById('cart-subtitle').textContent = count + ' item' + (count !== 1 ? 's' : '');
+  document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+  const el = document.getElementById('cart-items');
+  if (!cart.length) { el.innerHTML = '<div style="text-align:center;padding:52px 0;color:var(--muted);font-size:14px;font-weight:300;">Your cart is empty</div>'; return; }
+  el.innerHTML = cart.map(item => `
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--sand);">
+      <div style="width:52px;height:52px;background:var(--blush);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">🧺</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;color:var(--deep);font-weight:500;">${item.name}</div>
+        <div style="font-size:13px;color:var(--terracotta);margin-top:2px;">$${item.price.toFixed(2)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <button class="qty-btn" onclick="changeQty('${item.name}',-1)">−</button>
+        <span style="font-size:13px;min-width:16px;text-align:center;color:var(--deep);">${item.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${item.name}',1)">+</button>
+      </div>
+      <button onclick="removeFromCart('${item.name}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:4px;line-height:1;" onmouseenter="this.style.color='var(--terracotta)'" onmouseleave="this.style.color='var(--muted)'">✕</button>
+    </div>
+  `).join('');
+}
+function openCart() { document.getElementById('cart-drawer').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
+function closeCart() { document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+// Toast
+let tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Wishlist
+function toggleWishlist(btn) {
+  btn.classList.toggle('active');
+  showToast(btn.classList.contains('active') ? 'Added to wishlist ♥' : 'Removed from wishlist');
+}
+
+// Size
+function selectSize(btn, id) {
+  document.querySelectorAll('#'+id+' .size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Filter
+function filterCat(btn, cat) {
+  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#product-grid .product-card').forEach(c => {
+    c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+// Smooth scroll
+function smoothScroll(e, id) {
+  e.preventDefault();
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// Copy promo code
+function copyCode() {
+  navigator.clipboard.writeText('WELCOME15').then(() => showToast('Code WELCOME15 copied! 🎉')).catch(() => showToast('Code: WELCOME15'));
+}
+
+// Subscribe
+function subscribeEmail() {
+  const val = document.getElementById('email-input').value.trim();
+  if (!val || !val.includes('@')) { showToast('Please enter a valid email'); return; }
+  showToast('Subscribed! Welcome to BabyShop 🎉');
+  document.getElementById('email-input').value = '';
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+renderCart();
+</script>
+</body>
+</html>
