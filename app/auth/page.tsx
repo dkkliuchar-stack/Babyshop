@@ -21,7 +21,7 @@ export default function AuthPage() {
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMessage('Ошибка: ' + error.message);
-      else setMessage('Добро пожаловать! Вход выполнен.');
+      else window.location.href = '/';
     }
 
     setLoading(false);

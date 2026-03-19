@@ -1,11 +1,33 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
+
 type Props = {
   cartCount: number;
   onCartOpen: () => void;
 }
 
 export default function Header({ cartCount, onCartOpen }: Props) {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUserEmail(data.user?.email || null);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user?.email || null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setUserEmail(null);
+  }
+
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 100,
@@ -34,20 +56,27 @@ export default function Header({ cartCount, onCartOpen }: Props) {
           ))}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {/* Поиск */}
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C8478' }}>
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" strokeLinecap="round"/>
-            </svg>
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
 
-          {/* Вишлист */}
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9C8478' }}>
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+          {/* Пользователь */}
+          {userEmail ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 12, color: '#9C8478' }}>{userEmail}</span>
+              <button onClick={handleSignOut} style={{
+                background: 'none', border: '1px solid #E8D9CC',
+                padding: '6px 12px', fontSize: 11,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: '#9C8478', cursor: 'pointer', borderRadius: 2
+              }}>Sign Out</button>
+            </div>
+          ) : (
+            <a href="/auth" style={{
+              background: 'none', border: '1px solid #E8D9CC',
+              padding: '6px 12px', fontSize: 11,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              color: '#9C8478', textDecoration: 'none', borderRadius: 2
+            }}>Sign In</a>
+          )}
 
           {/* Корзина */}
           <button onClick={onCartOpen} style={{
@@ -69,6 +98,7 @@ export default function Header({ cartCount, onCartOpen }: Props) {
               }}>{cartCount}</span>
             )}
           </button>
+
         </div>
       </div>
     </header>
