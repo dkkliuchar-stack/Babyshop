@@ -16,6 +16,7 @@ type Props = {
 export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
   const safeItems = items || [];
   const total = safeItems.reduce((s, i) => s + i.price * i.qty, 0);
+  const displayTotal = Math.round(total * 100) / 100;
   const count = safeItems.reduce((s, i) => s + i.qty, 0);
 
   return (
@@ -36,6 +37,7 @@ export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
         zIndex: 200,
         display: 'flex', flexDirection: 'column'
       }}>
+
         <div style={{
           padding: '22px 24px',
           borderBottom: '1px solid #E8D9CC',
@@ -48,7 +50,7 @@ export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
           <button onClick={onClose} style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: '#9C8478', fontSize: 20, lineHeight: 1
-          }}>✕</button>
+          }}>x</button>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px' }}>
@@ -74,19 +76,28 @@ export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <button onClick={() => onChangeQty(item.name, -1)} style={{
-                    width: 26, height: 26, border: '1px solid #E8D9CC',
-                    background: 'transparent', cursor: 'pointer', borderRadius: 2, fontSize: 15
-                  }}>−</button>
-                  <span style={{ fontSize: 13, minWidth: 16, textAlign: 'center' }}>{item.qty}</span>
+                    width: 28, height: 28, border: '1px solid #E8D9CC',
+                    background: 'transparent', cursor: 'pointer',
+                    borderRadius: 2, fontSize: 16, lineHeight: 1,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#3B2A24'
+                  }}>-</button>
+                  <span style={{
+                    fontSize: 14, minWidth: 20, textAlign: 'center',
+                    color: '#3B2A24', display: 'inline-block', fontWeight: 500
+                  }}>{item.qty}</span>
                   <button onClick={() => onChangeQty(item.name, 1)} style={{
-                    width: 26, height: 26, border: '1px solid #E8D9CC',
-                    background: 'transparent', cursor: 'pointer', borderRadius: 2, fontSize: 15
+                    width: 28, height: 28, border: '1px solid #E8D9CC',
+                    background: 'transparent', cursor: 'pointer',
+                    borderRadius: 2, fontSize: 16, lineHeight: 1,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#3B2A24'
                   }}>+</button>
                 </div>
                 <button onClick={() => onRemove(item.name)} style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   color: '#9C8478', fontSize: 15, padding: 4
-                }}>✕</button>
+                }}>x</button>
               </div>
             ))
           )}
@@ -96,7 +107,7 @@ export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
             <span style={{ fontSize: 12, color: '#9C8478', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Subtotal</span>
             <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.3rem', color: '#3B2A24', fontWeight: 600 }}>
-              ${total.toFixed(2)}
+              ${displayTotal.toFixed(2)}
             </span>
           </div>
           <button style={{
@@ -112,6 +123,7 @@ export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
             borderRadius: 2, cursor: 'pointer'
           }}>Continue Shopping</button>
         </div>
+
       </div>
     </div>
   );

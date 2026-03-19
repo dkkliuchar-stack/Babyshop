@@ -1,7 +1,6 @@
 'use client';
-import { supabase } from '../lib/supabase';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ProductCard from './components/ProductCard';
@@ -17,6 +16,21 @@ type CartItem = {
 export default function Home() {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cart');
+      if (saved) setCartItems(JSON.parse(saved));
+    } catch {}
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    }
+  }, [cartItems, mounted]);
 
   function addToCart(name: string, price: number) {
     setCartItems(prev => {
