@@ -110,12 +110,14 @@ export default function Cart({ items, onClose, onChangeQty, onRemove }: Props) {
               ${displayTotal.toFixed(2)}
             </span>
           </div>
-          <button style={{
-            width: '100%', background: '#3B2A24', color: '#fff',
+          <a href="/checkout" style={{
+            display: 'block', width: '100%', background: '#3B2A24', color: '#fff',
             border: 'none', padding: 14, fontSize: 11,
             letterSpacing: '0.14em', textTransform: 'uppercase',
-            borderRadius: 2, cursor: 'pointer', marginBottom: 10
-          }}>Proceed to Checkout</button>
+            borderRadius: 2, cursor: 'pointer', marginBottom: 10,
+            textAlign: 'center', textDecoration: 'none',
+            boxSizing: 'border-box'
+          }}>Proceed to Checkout</a>
           <button onClick={onClose} style={{
             width: '100%', background: 'transparent', color: '#3B2A24',
             border: '1px solid #3B2A24', padding: 12, fontSize: 11,
