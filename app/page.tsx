@@ -6,6 +6,7 @@ import Hero from './components/Hero';
 import ProductCard from './components/ProductCard';
 import Footer from './components/Footer';
 import Cart from './components/Cart';
+import { products } from '../lib/products';
 
 type CartItem = {
   name: string;
@@ -56,28 +57,33 @@ export default function Home() {
 
   const cartCount = cartItems.reduce((s, i) => s + i.qty, 0);
 
-  const products = [
-    { name: 'Bunny Bodysuit', price: 24.00, badge: 'New', category: 'Bodysuit', image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&q=85' },
-    { name: 'Cloud Romper', price: 34.00, badge: 'Sale', category: 'Romper', image: 'https://images.unsplash.com/photo-1567538096621-38d2284b23ff?w=600&q=85' },
-    { name: 'Bear Knit Hat', price: 18.00, category: 'Accessory', image: 'https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=600&q=85' },
-  ];
-
   return (
-    <main style={{ background: '#FAF6F1', minHeight: '100vh' }}>
+    <main className="bg-[#FAF6F1] min-h-screen">
       <Header cartCount={cartCount} onCartOpen={() => setCartOpen(true)} />
       <Hero />
-      <section id="catalog" style={{ maxWidth: 1152, margin: '0 auto', padding: '60px 24px' }}>
-        <h2 style={{
-          fontFamily: 'Georgia, serif', fontSize: '2rem',
-          color: '#3B2A24', marginBottom: 40, textAlign: 'center'
-        }}>New Arrivals</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+
+      <section id="catalog" className="max-w-6xl mx-auto px-6 py-12 md:py-20">
+        <h2 className="font-serif text-3xl md:text-4xl text-[#3B2A24] mb-8 md:mb-12 text-center">
+          New Arrivals
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {products.map(product => (
-            <ProductCard key={product.name} {...product} onAddToCart={addToCart} />
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              badge={product.badge}
+              category={product.category}
+              image={product.colors[0].image}
+              onAddToCart={addToCart}
+            />
           ))}
         </div>
       </section>
+
       <Footer />
+
       {cartOpen && (
         <Cart
           items={cartItems}

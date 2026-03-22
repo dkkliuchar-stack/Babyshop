@@ -10,16 +10,15 @@ type Props = {
 
 export default function Header({ cartCount, onCartOpen }: Props) {
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email || null);
     });
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserEmail(session?.user?.email || null);
     });
-
     return () => listener.subscription.unsubscribe();
   }, []);
 
@@ -29,78 +28,97 @@ export default function Header({ cartCount, onCartOpen }: Props) {
   }
 
   return (
-    <header style={{
-      position: 'sticky', top: 0, zIndex: 100,
-      background: 'rgba(250,246,241,0.93)',
-      borderBottom: '1px solid #E8D9CC',
-      backdropFilter: 'blur(12px)'
-    }}>
-      <div style={{
-        maxWidth: 1152, margin: '0 auto',
-        padding: '16px 24px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-      }}>
-        <a href="/" style={{
-          fontFamily: 'Georgia, serif', fontSize: '1.6rem',
-          color: '#3B2A24', textDecoration: 'none', fontWeight: 600
-        }}>
-          Baby<span style={{ color: '#C0785A' }}>Shop</span>
+    <header className="sticky top-0 z-50 bg-[#FAF6F1]/95 border-b border-[#E8D9CC] backdrop-blur-md">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+
+        {/* Логотип */}
+        <a href="/" className="font-serif text-2xl text-[#3B2A24] no-underline font-semibold">
+          Baby<span className="text-[#C0785A]">Shop</span>
         </a>
 
-        <nav style={{ display: 'flex', gap: 32 }}>
+        {/* Навигация — скрыта на мобиле */}
+        <nav className="hidden md:flex gap-8">
           {['New Arrivals', 'Catalog', 'Collections', 'About'].map(item => (
-            <a key={item} href="#" style={{
-              fontSize: 12, letterSpacing: '0.1em',
-              textTransform: 'uppercase', color: '#9C8478', textDecoration: 'none'
-            }}>{item}</a>
+            <a key={item} href="#"
+              className="text-xs tracking-widest uppercase text-[#9C8478] no-underline hover:text-[#3B2A24] transition-colors">
+              {item}
+            </a>
           ))}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Правая часть */}
+        <div className="flex items-center gap-4">
 
-          {/* Пользователь */}
-          {userEmail ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 12, color: '#9C8478' }}>{userEmail}</span>
-              <button onClick={handleSignOut} style={{
-                background: 'none', border: '1px solid #E8D9CC',
-                padding: '6px 12px', fontSize: 11,
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: '#9C8478', cursor: 'pointer', borderRadius: 2
-              }}>Sign Out</button>
-            </div>
-          ) : (
-            <a href="/auth" style={{
-              background: 'none', border: '1px solid #E8D9CC',
-              padding: '6px 12px', fontSize: 11,
-              letterSpacing: '0.1em', textTransform: 'uppercase',
-              color: '#9C8478', textDecoration: 'none', borderRadius: 2
-            }}>Sign In</a>
-          )}
+          {/* Пользователь — скрыт на мобиле */}
+          <div className="hidden md:flex items-center gap-3">
+            {userEmail ? (
+              <>
+                <span className="text-xs text-[#9C8478] max-w-[160px] truncate">{userEmail}</span>
+                <button onClick={handleSignOut}
+                  className="text-xs tracking-widest uppercase text-[#9C8478] border border-[#E8D9CC] px-3 py-1.5 rounded-sm hover:border-[#3B2A24] hover:text-[#3B2A24] transition-colors bg-transparent cursor-pointer">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <a href="/auth"
+                className="text-xs tracking-widest uppercase text-[#9C8478] border border-[#E8D9CC] px-3 py-1.5 rounded-sm no-underline hover:border-[#3B2A24] hover:text-[#3B2A24] transition-colors">
+                Sign In
+              </a>
+            )}
+          </div>
 
           {/* Корзина */}
-          <button onClick={onCartOpen} style={{
-            position: 'relative', background: 'none',
-            border: 'none', cursor: 'pointer', color: '#9C8478'
-          }}>
+          <button onClick={onCartOpen}
+            className="relative text-[#9C8478] hover:text-[#3B2A24] transition-colors bg-transparent border-none cursor-pointer p-0">
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M3 6h18M16 10a4 4 0 01-8 0" strokeLinecap="round"/>
             </svg>
             {cartCount > 0 && (
-              <span style={{
-                position: 'absolute', top: -6, right: -8,
-                width: 17, height: 17,
-                background: '#C0785A', color: '#fff',
-                fontSize: 10, borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 500
-              }}>{cartCount}</span>
+              <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-[#C0785A] text-white text-[10px] rounded-full flex items-center justify-center font-medium">
+                {cartCount}
+              </span>
             )}
+          </button>
+
+          {/* Hamburger — только на мобиле */}
+          <button onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden flex flex-col gap-1.5 bg-transparent border-none cursor-pointer p-1">
+            <span className={`block w-5 h-0.5 bg-[#3B2A24] transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`}/>
+            <span className={`block w-5 h-0.5 bg-[#3B2A24] transition-all ${menuOpen ? 'opacity-0' : ''}`}/>
+            <span className={`block w-5 h-0.5 bg-[#3B2A24] transition-all ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`}/>
           </button>
 
         </div>
       </div>
+
+      {/* Мобильное меню */}
+      {menuOpen && (
+        <div className="md:hidden border-t border-[#E8D9CC] bg-[#FAF6F1] px-6 py-4 flex flex-col gap-4">
+          {['New Arrivals', 'Catalog', 'Collections', 'About'].map(item => (
+            <a key={item} href="#"
+              className="text-xs tracking-widest uppercase text-[#9C8478] no-underline">
+              {item}
+            </a>
+          ))}
+          <div className="border-t border-[#E8D9CC] pt-4">
+            {userEmail ? (
+              <div className="flex flex-col gap-3">
+                <span className="text-xs text-[#9C8478]">{userEmail}</span>
+                <button onClick={handleSignOut}
+                  className="text-xs tracking-widest uppercase text-[#9C8478] border border-[#E8D9CC] px-3 py-2 rounded-sm text-left bg-transparent cursor-pointer">
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <a href="/auth"
+                className="text-xs tracking-widest uppercase text-[#9C8478] no-underline">
+                Sign In
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

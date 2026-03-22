@@ -35,155 +35,121 @@ export default function CheckoutPage() {
       alert('Корзина пуста');
       return;
     }
-
     setLoading(true);
-
     const { error } = await supabase.from('orders').insert({
-      name,
-      phone,
-      address,
-      items: cartItems,
-      total,
-      status: 'new'
+      name, phone, address, items: cartItems, total, status: 'new'
     });
-
     if (error) {
       alert('Ошибка: ' + error.message);
     } else {
       localStorage.removeItem('cart');
       setSuccess(true);
     }
-
     setLoading(false);
   }
 
   if (success) {
     return (
-      <main style={{ background: '#FAF6F1', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', padding: '48px 40px' }}>
-          <div style={{ fontSize: 48, marginBottom: 24 }}>🎉</div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '2rem', color: '#3B2A24', marginBottom: 16 }}>
+      <main className="bg-[#FAF6F1] min-h-screen flex items-center justify-center px-6">
+        <div className="text-center py-12 px-10">
+          <div className="text-5xl mb-6">🎉</div>
+          <h1 className="font-serif text-3xl text-[#3B2A24] mb-4">
             Заказ оформлен!
           </h1>
-          <p style={{ fontSize: 15, color: '#9C8478', marginBottom: 32, lineHeight: 1.7 }}>
+          <p className="text-[15px] text-[#9C8478] mb-8 leading-relaxed">
             Спасибо за покупку. Мы свяжемся с вами в ближайшее время.
           </p>
-          <a href="/" style={{
-            background: '#3B2A24', color: '#fff',
-            padding: '13px 28px', borderRadius: 2,
-            textDecoration: 'none', fontSize: 12,
-            letterSpacing: '0.14em', textTransform: 'uppercase'
-          }}>Вернуться в магазин</a>
+          <a href="/"
+            className="bg-[#3B2A24] text-white px-7 py-3.5 rounded-sm no-underline text-xs tracking-[0.14em] uppercase hover:bg-[#C0785A] transition-colors">
+            Вернуться в магазин
+          </a>
         </div>
       </main>
     );
   }
 
   return (
-    <main style={{ background: '#FAF6F1', minHeight: '100vh', padding: '60px 24px' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+    <main className="bg-[#FAF6F1] min-h-screen px-6 py-12 md:py-16">
+      <div className="max-w-4xl mx-auto">
 
-        {/* Форма */}
-        <div>
-          <a href="/" style={{ fontSize: 13, color: '#9C8478', textDecoration: 'none' }}>← Назад в магазин</a>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '2rem', color: '#3B2A24', margin: '24px 0 32px' }}>
-            Оформление заказа
-          </h1>
+        {/* На мобиле: сначала сводка, потом форма — логично видеть что заказываешь */}
+        {/* На компьютере: форма слева, сводка справа */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
 
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9C8478', display: 'block', marginBottom: 6 }}>Имя</label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Иван Иванов"
-              style={{
-                width: '100%', padding: '12px 14px', fontSize: 14,
-                border: '1px solid #E8D9CC', borderRadius: 2,
-                outline: 'none', background: '#fff', color: '#3B2A24',
-                boxSizing: 'border-box'
-              }}
-            />
+          {/* Сводка заказа — на мобиле идёт первой */}
+          <div className="md:order-2 bg-white border border-[#E8D9CC] rounded-sm p-6 md:p-8 h-fit">
+            <h2 className="font-serif text-xl text-[#3B2A24] mb-6">
+              Ваш заказ
+            </h2>
+            {cartItems.length === 0 ? (
+              <p className="text-sm text-[#9C8478]">Корзина пуста</p>
+            ) : (
+              cartItems.map(item => (
+                <div key={item.name}
+                  className="flex justify-between py-3 border-b border-[#E8D9CC] text-sm text-[#3B2A24]">
+                  <span>{item.name} × {item.qty}</span>
+                  <span>${(item.price * item.qty).toFixed(2)}</span>
+                </div>
+              ))
+            )}
+            <div className="flex justify-between pt-4 font-serif text-xl text-[#3B2A24] font-semibold">
+              <span>Итого</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
           </div>
 
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9C8478', display: 'block', marginBottom: 6 }}>Телефон</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              placeholder="+38 (099) 123-45-67"
-              style={{
-                width: '100%', padding: '12px 14px', fontSize: 14,
-                border: '1px solid #E8D9CC', borderRadius: 2,
-                outline: 'none', background: '#fff', color: '#3B2A24',
-                boxSizing: 'border-box'
-              }}
-            />
+          {/* Форма — на мобиле идёт второй */}
+          <div className="md:order-1">
+            <a href="/" className="text-sm text-[#9C8478] no-underline hover:text-[#3B2A24] transition-colors">
+              ← Назад в магазин
+            </a>
+            <h1 className="font-serif text-3xl text-[#3B2A24] mt-6 mb-8">
+              Оформление заказа
+            </h1>
+
+            <div className="mb-5">
+              <label className="block text-[11px] tracking-[0.1em] uppercase text-[#9C8478] mb-2">Имя</label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Иван Иванов"
+                className="w-full px-3.5 py-3 text-sm border border-[#E8D9CC] rounded-sm outline-none bg-white text-[#3B2A24] focus:border-[#3B2A24] transition-colors"
+              />
+            </div>
+
+            <div className="mb-5">
+              <label className="block text-[11px] tracking-[0.1em] uppercase text-[#9C8478] mb-2">Телефон</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="+38 (099) 123-45-67"
+                className="w-full px-3.5 py-3 text-sm border border-[#E8D9CC] rounded-sm outline-none bg-white text-[#3B2A24] focus:border-[#3B2A24] transition-colors"
+              />
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-[11px] tracking-[0.1em] uppercase text-[#9C8478] mb-2">Адрес доставки</label>
+              <textarea
+                value={address}
+                onChange={e => setAddress(e.target.value)}
+                placeholder="г. Киев, ул. Крещатик, 1, кв. 10"
+                rows={3}
+                className="w-full px-3.5 py-3 text-sm border border-[#E8D9CC] rounded-sm outline-none bg-white text-[#3B2A24] focus:border-[#3B2A24] transition-colors resize-y font-[inherit]"
+              />
+            </div>
+
+            <button
+              onClick={handleOrder}
+              disabled={loading}
+              className="w-full bg-[#3B2A24] text-white border-none py-3.5 text-xs tracking-[0.14em] uppercase rounded-sm cursor-pointer hover:bg-[#C0785A] transition-colors disabled:opacity-60"
+            >
+              {loading ? 'Оформляем...' : 'Оформить заказ'}
+            </button>
           </div>
 
-          <div style={{ marginBottom: 32 }}>
-            <label style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9C8478', display: 'block', marginBottom: 6 }}>Адрес доставки</label>
-            <textarea
-              value={address}
-              onChange={e => setAddress(e.target.value)}
-              placeholder="г. Киев, ул. Крещатик, 1, кв. 10"
-              rows={3}
-              style={{
-                width: '100%', padding: '12px 14px', fontSize: 14,
-                border: '1px solid #E8D9CC', borderRadius: 2,
-                outline: 'none', background: '#fff', color: '#3B2A24',
-                boxSizing: 'border-box', resize: 'vertical',
-                fontFamily: 'inherit'
-              }}
-            />
-          </div>
-
-          <button
-            onClick={handleOrder}
-            disabled={loading}
-            style={{
-              width: '100%', background: '#3B2A24', color: '#fff',
-              border: 'none', padding: 14, fontSize: 12,
-              letterSpacing: '0.14em', textTransform: 'uppercase',
-              borderRadius: 2, cursor: 'pointer'
-            }}
-          >
-            {loading ? 'Оформляем...' : 'Оформить заказ'}
-          </button>
         </div>
-
-        {/* Сводка заказа */}
-        <div style={{ background: '#fff', border: '1px solid #E8D9CC', borderRadius: 4, padding: '32px', height: 'fit-content' }}>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '1.3rem', color: '#3B2A24', marginBottom: 24 }}>
-            Ваш заказ
-          </h2>
-
-          {cartItems.length === 0 ? (
-            <p style={{ color: '#9C8478', fontSize: 14 }}>Корзина пуста</p>
-          ) : (
-            cartItems.map(item => (
-              <div key={item.name} style={{
-                display: 'flex', justifyContent: 'space-between',
-                padding: '12px 0', borderBottom: '1px solid #E8D9CC',
-                fontSize: 14, color: '#3B2A24'
-              }}>
-                <span>{item.name} × {item.qty}</span>
-                <span>${(item.price * item.qty).toFixed(2)}</span>
-              </div>
-            ))
-          )}
-
-          <div style={{
-            display: 'flex', justifyContent: 'space-between',
-            padding: '16px 0 0', fontFamily: 'Georgia, serif',
-            fontSize: '1.2rem', color: '#3B2A24', fontWeight: 600
-          }}>
-            <span>Итого</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-        </div>
-
       </div>
     </main>
   );
