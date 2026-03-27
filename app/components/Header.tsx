@@ -44,6 +44,10 @@ export default function Header({ cartCount, onCartOpen }: Props) {
               {item}
             </a>
           ))}
+          <a href="/gift-configurator"
+            className="text-xs tracking-widest uppercase text-[#C0785A] no-underline hover:text-[#3B2A24] transition-colors font-medium">
+            Gift Finder
+          </a>
         </nav>
 
         {/* Правая часть */}
@@ -101,6 +105,10 @@ export default function Header({ cartCount, onCartOpen }: Props) {
               {item}
             </a>
           ))}
+          <a href="/gift-configurator"
+            className="text-xs tracking-widest uppercase text-[#C0785A] no-underline font-medium">
+            Gift Finder
+          </a>
           <div className="border-t border-[#E8D9CC] pt-4">
             {userEmail ? (
               <div className="flex flex-col gap-3">
